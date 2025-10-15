@@ -29,7 +29,8 @@ public class Labirinto extends Mapa {
             this.printarMapa();
 
             for(int i = 0; i < this.arrayDeRatos.size(); ++i) {
-                this.threads.add(new Thread(() -> this.movimentarRato(i)));
+                final int index= i;
+                this.threads.add(new Thread(() -> this.movimentarRato(index)));
             }
 
             for(Thread t : this.threads) {
