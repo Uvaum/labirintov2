@@ -28,22 +28,42 @@ public class Labirinto extends Mapa {
             this.limparConsole();
             this.printarMapa();
 
+//            for(int i = 0; i < this.arrayDeRatos.size(); ++i) {
+//                final int index= i;
+//                this.threads.add(new Thread(() -> this.movimentarRato(index)));
+//            }
             for(int i = 0; i < this.arrayDeRatos.size(); ++i) {
-                final int index= i;
-                this.threads.add(new Thread(() -> this.movimentarRato(index)));
+                final int index = i;
+                Thread t = new Thread(() -> this.movimentarRato(index));
+                this.threads.add(t);
+                t.start();
             }
 
-            for(Thread t : this.threads) {
-                t.start();
 
+//            for(Thread t : this.threads) {
+//                t.start();
+//
+//                try {
+//                    Thread.sleep(100);
+//                } catch (InterruptedException var4) {
+//                    Thread.currentThread().interrupt();
+//                }
+//            }
+            for(Thread t : this.threads) {
                 try {
-                    Thread.sleep(10L);
-                } catch (InterruptedException var4) {
+                    t.join(); // Espera a thread terminar
+                } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
             }
 
             this.threads.clear();
+            try {
+                Thread.sleep(100); // Ajuste este valor para controlar a velocidade da animação
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
         }
 
     }
@@ -65,13 +85,25 @@ public class Labirinto extends Mapa {
 
     private void limparConsole() {
         try {
-            if (System.getProperty("os.name").contains("Windows")) {
-                (new ProcessBuilder(new String[]{"cmd", "/c", "cls"})).inheritIO().start().waitFor();
+            String os = System.getProperty("os.name");
+            if (System.console() == null) {
+                // Provavelmente está em um IDE ou ambiente web
+                // Usa uma abordagem mais simples
+                for(int i = 0; i < 50; i++) {
+                    System.out.println();
+                }
+                System.out.println("=".repeat(50)); // Separador visual
+            } else if(os.contains("Windows")) {
+                new ProcessBuilder(new String[]{"cmd", "/c", "cls"}).inheritIO().start().waitFor();
             } else {
                 System.out.print("\u001b[H\u001b[2J");
                 System.out.flush();
             }
-        } catch (Exception var2) {
+        } catch (Exception e) {
+            System.out.println("\n".repeat(50));
+            System.out.println("=".repeat(50));
+
+
         }
 
     }
